@@ -1,6 +1,8 @@
+import '../models/coco_labels.dart';
 import 'dart:isolate';
 
 import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 import '../models/detection.dart';
@@ -10,38 +12,50 @@ class DetectorService {
   SendPort? _sendPort;
 
   Future<void> initialize() async {
+    // Load the model in the Flutter isolate.
+    // rootBundle cannot be used directly inside a spawned isolate.
+    final modelData = await rootBundle.load(
+      'assets/models/ssd_mobilenet_v1.tflite',
+    );
+
+    final modelBytes = modelData.buffer.asUint8List();
+
     final receivePort = ReceivePort();
 
-    _isolate = await Isolate.spawn(
+    await Isolate.spawn<Map<String, dynamic>>(
       _isolateEntry,
-      receivePort.sendPort,
+      {
+        'sendPort': receivePort.sendPort,
+        'modelBytes': modelBytes,
+      },
     );
 
     _sendPort = await receivePort.first as SendPort;
   }
 
   Future<List<Detection>> detect({
-    required Uint8List imageBytes,
+    required Uint8List rgbBytes,
     required int imageWidth,
     required int imageHeight,
-    required List<String> labels,
   }) async {
-    if (_sendPort == null) {
-      throw StateError('DetectorService has not been initialized.');
+    final sendPort = _sendPort;
+
+    if (sendPort == null) {
+      throw StateError(
+        'DetectorService has not been initialized.',
+      );
     }
 
     final responsePort = ReceivePort();
 
-    _sendPort!.send({
+    sendPort.send({
       'replyPort': responsePort.sendPort,
-      'imageBytes': imageBytes,
+      'rgbBytes': rgbBytes,
       'imageWidth': imageWidth,
       'imageHeight': imageHeight,
-      'labels': labels,
     });
 
     final result = await responsePort.first;
-
     responsePort.close();
 
     if (result is String) {
@@ -71,29 +85,27 @@ class DetectorService {
     _sendPort = null;
   }
 
-  static Future<void> _isolateEntry(SendPort mainSendPort) async {
+  static Future<void> _isolateEntry(
+    Map<String, dynamic> args,
+  ) async {
+    final mainSendPort = args['sendPort'] as SendPort;
+    final modelBytes = args['modelBytes'] as Uint8List;
+
     final receivePort = ReceivePort();
 
     mainSendPort.send(receivePort.sendPort);
 
-    final modelData = await rootBundle.load(
-      'assets/models/ssd_mobilenet_v1.tflite',
-    );
-
-    final interpreter = Interpreter.fromBuffer(
-      modelData.buffer.asUint8List(),
-    );
+    final interpreter = Interpreter.fromBuffer(modelBytes);
 
     await for (final message in receivePort) {
       try {
         final replyPort = message['replyPort'] as SendPort;
-        final imageBytes = message['imageBytes'] as Uint8List;
+        final rgbBytes = message['rgbBytes'] as Uint8List;
         final imageWidth = message['imageWidth'] as int;
         final imageHeight = message['imageHeight'] as int;
-        final labels = List<String>.from(message['labels'] as List);
 
         final input = _prepareInput(
-          imageBytes,
+          rgbBytes,
           imageWidth,
           imageHeight,
         );
@@ -133,33 +145,40 @@ class DetectorService {
         final detections = <Map<String, dynamic>>[];
 
         for (var i = 0; i < 10; i++) {
-          final score = (scores[0][i] as num).toDouble();
+  final score = (scores[0][i] as num).toDouble();
 
-          if (score < 0.50) {
-            continue;
-          }
+  if (score < 0.65) {
+    continue;
+  }
 
-          final classId = (classes[0][i] as num).toInt();
+  final classId = (classes[0][i] as num).toInt();
 
-          final box = boxes[0][i];
+  final box = boxes[0][i];
 
-          final top = (box[0] as num).toDouble();
-          final left = (box[1] as num).toDouble();
-          final bottom = (box[2] as num).toDouble();
-          final right = (box[3] as num).toDouble();
+  // SSD MobileNet format:
+  // [top, left, bottom, right]
+  final top = (box[0] as num).toDouble();
+  final left = (box[1] as num).toDouble();
+  final bottom = (box[2] as num).toDouble();
+  final right = (box[3] as num).toDouble();
 
-          detections.add({
-            'classId': classId,
-            'label': classId < labels.length
-                ? labels[classId]
-                : 'Unknown',
-            'confidence': score,
-            'left': left.clamp(0.0, 1.0),
-            'top': top.clamp(0.0, 1.0),
-            'width': (right - left).clamp(0.0, 1.0),
-            'height': (bottom - top).clamp(0.0, 1.0),
-          });
-        }
+  final width = right - left;
+  final height = bottom - top;
+
+  if (width <= 0 || height <= 0) {
+    continue;
+  }
+
+  detections.add({
+    'classId': classId,
+    'label': cocoLabels[classId] ?? 'class_$classId',
+    'confidence': score,
+    'left': left.clamp(0.0, 1.0),
+    'top': top.clamp(0.0, 1.0),
+    'width': width.clamp(0.0, 1.0),
+    'height': height.clamp(0.0, 1.0),
+  });
+}
 
         replyPort.send(detections);
       } catch (e) {
@@ -172,18 +191,59 @@ class DetectorService {
   }
 
   static Uint8List _prepareInput(
-    Uint8List imageBytes,
+    Uint8List rgbBytes,
     int width,
     int height,
   ) {
-    // Temporary implementation.
-    //
-    // The camera plugin gives us YUV420 on Android.
-    // We'll add the YUV420 → RGB conversion in the next checkpoint.
-    //
-    // For now this simply verifies that the isolate and TFLite
-    // interpreter are correctly connected.
+    final source = img.Image(
+  width: width,
+  height: height,
+);
 
-    return imageBytes;
+var index = 0;
+
+for (var y = 0; y < height; y++) {
+  for (var x = 0; x < width; x++) {
+    source.setPixelRgb(
+      x,
+      y,
+      rgbBytes[index],
+      rgbBytes[index + 1],
+      rgbBytes[index + 2],
+    );
+
+    index += 3;
+  }
+}
+
+final rotated = img.copyRotate(
+  source,
+  angle: 90,
+);
+
+final resized = img.copyResize(
+  rotated,
+  width: 300,
+  height: 300,
+  interpolation: img.Interpolation.nearest,
+);
+
+    final input = Uint8List(
+      1 * 300 * 300 * 3,
+    );
+
+    index = 0;
+
+    for (var y = 0; y < 300; y++) {
+      for (var x = 0; x < 300; x++) {
+        final pixel = resized.getPixel(x, y);
+
+        input[index++] = pixel.r.toInt();
+        input[index++] = pixel.g.toInt();
+        input[index++] = pixel.b.toInt();
+      }
+    }
+
+    return input;
   }
 }

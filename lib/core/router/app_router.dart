@@ -68,6 +68,6 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
   path: '/detector',
   builder: (context, state) => const DetectorPage(),
-),
+  ),
   ],
 );
