@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/analyzer_cubit.dart';
 import '../cubit/analyzer_state.dart';
 import '../services/groq_vision_service.dart';
+import '../../../core/di/injection.dart';
+import '../../history/repository/history_repository.dart';
 
 class AnalyzerPage extends StatefulWidget {
   const AnalyzerPage({super.key});
@@ -144,8 +146,9 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
 
     return BlocProvider(
       create: (_) => AnalyzerCubit(
-        GroqVisionService(),
-      ),
+       GroqVisionService(),
+       getIt<HistoryRepository>(),
+     ),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('AI Image Analyzer'),

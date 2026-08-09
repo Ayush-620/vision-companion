@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../features/auth/cubit/auth_cubit.dart';
 import '../../features/auth/repository/auth_repository.dart';
+import '../../features/history/repository/history_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -42,4 +43,11 @@ Future<void> configureDependencies() async {
       getIt<AuthRepository>(),
     ),
   );
+
+  getIt.registerLazySingleton(
+   () => HistoryRepository(
+     firestore: getIt(),
+     auth: getIt(),
+   ),
+ );
 }

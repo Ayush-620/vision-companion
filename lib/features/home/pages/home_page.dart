@@ -20,6 +20,13 @@ class HomePage extends StatelessWidget {
         title: const Text('Vision Companion'),
         actions: [
           IconButton(
+            tooltip: 'History',
+            onPressed: () {
+             context.push('/history');
+              },
+              icon: const Icon(Icons.history),
+          ),
+          IconButton(
             tooltip: 'Profile',
             onPressed: () {
               showModalBottomSheet(

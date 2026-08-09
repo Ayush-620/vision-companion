@@ -2,6 +2,8 @@ import '../services/speech_service.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/di/injection.dart';
+import '../../history/repository/history_repository.dart';
 import '../services/detector_service.dart';
 import '../services/yuv_converter.dart';
 import '../models/detection.dart';
@@ -28,6 +30,9 @@ class _DetectorPageState extends State<DetectorPage> {
   String _status = 'Starting camera...';
 
   final SpeechService _speechService = SpeechService();
+
+  final HistoryRepository _historyRepository =
+    getIt<HistoryRepository>();
 
 final Map<String, DateTime> _lastSpoken = {};
 
@@ -81,10 +86,22 @@ static const Duration _speechCooldown = Duration(
   final uniqueObjects = objectsToSpeak.toSet().toList();
 
   final message = uniqueObjects.length == 1
-      ? '${uniqueObjects.first} detected'
-      : '${uniqueObjects.join(', ')} detected';
+    ? '${uniqueObjects.first} detected'
+    : '${uniqueObjects.join(', ')} detected';
 
-  await _speechService.speak(message);
+await _speechService.speak(message);
+try {
+  await _historyRepository.saveHistory(
+    featureType: 'detector',
+    resultSummary: message,
+  );
+} catch (e) {
+  debugPrint('History save failed: $e');
+}
+await _historyRepository.saveHistory(
+  featureType: 'detector',
+  resultSummary: message,
+);
 }   
 
   Future<void> _initialize() async {
