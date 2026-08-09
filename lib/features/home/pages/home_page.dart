@@ -68,13 +68,9 @@ class HomePage extends StatelessWidget {
               description:
                   'Capture an image and get an AI-powered description.',
               buttonText: 'Analyze Image',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('AI Image Analyzer coming next.'),
-                  ),
-                );
-              },
+                   onPressed: () {
+                   context.go('/analyzer');
+             },
             ),
           ],
         ),
