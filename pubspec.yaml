@@ -50,6 +50,7 @@ dependencies:
   tflite_flutter: ^0.12.1
   image: ^4.9.1
   flutter_tts: ^4.2.5
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
@@ -74,8 +75,9 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/models/ssd_mobilenet_v1.tflite
     - .env
+    - assets/models/ssd_mobilenet_v1.tflite
+    
 
   # To add assets to your application, add an assets section, like this:
   # assets:
