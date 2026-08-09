@@ -1,0 +1,18 @@
+{
+  "@@locale": "en",
+  "appTitle": "Vision Companion",
+  "welcome": "Welcome, {name} 👋",
+  "chooseVisionTool": "Choose a vision tool to get started.",
+  "liveObjectDetector": "Live Object Detector",
+  "liveObjectDetectorDescription": "Use your camera to detect objects in real time.",
+  "startDetector": "Start Detector",
+  "aiImageAnalyzer": "AI Image Analyzer",
+  "aiImageAnalyzerDescription": "Capture an image and get an AI-powered description.",
+  "analyzeImage": "Analyze Image",
+  "profile": "Profile",
+  "signOut": "Sign Out",
+  "settings": "Settings",
+  "language": "Language",
+  "english": "English",
+  "hindi": "Hindi"
+}

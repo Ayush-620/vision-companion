@@ -10,6 +10,7 @@ import '../../features/auth/pages/signup_page.dart';
 import '../../features/detector/pages/detector_page.dart';
 import '../../features/analyzer/pages/analyzer_page.dart';
 import '../../features/history/pages/history_page.dart';
+import '../../features/settings/pages/settings_page.dart';
 import '../../core/di/injection.dart';
 
 class AuthChangeNotifier extends ChangeNotifier {
@@ -79,8 +80,12 @@ final GoRouter appRouter = GoRouter(
    GoRoute(
      path: '/history',
      builder: (context, state) => HistoryPage(
-    repository: getIt(),
+     repository: getIt(),
     ),
    ),
+   GoRoute(
+     path: '/settings',
+     builder: (context, state) => const SettingsPage(),
+  ),
   ],
 );

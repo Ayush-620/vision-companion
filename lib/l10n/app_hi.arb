@@ -1,0 +1,18 @@
+{
+  "@@locale": "hi",
+  "appTitle": "विज़न कंपैनियन",
+  "welcome": "स्वागत है, {name} 👋",
+  "chooseVisionTool": "शुरू करने के लिए कोई विज़न टूल चुनें।",
+  "liveObjectDetector": "लाइव ऑब्जेक्ट डिटेक्टर",
+  "liveObjectDetectorDescription": "रीयल टाइम में वस्तुओं का पता लगाने के लिए अपने कैमरे का उपयोग करें।",
+  "startDetector": "डिटेक्टर शुरू करें",
+  "aiImageAnalyzer": "AI इमेज एनालाइज़र",
+  "aiImageAnalyzerDescription": "एक तस्वीर लें और उसका AI द्वारा विवरण प्राप्त करें।",
+  "analyzeImage": "तस्वीर का विश्लेषण करें",
+  "profile": "प्रोफ़ाइल",
+  "signOut": "साइन आउट",
+  "settings": "सेटिंग्स",
+  "language": "भाषा",
+  "english": "अंग्रेज़ी",
+  "hindi": "हिंदी"
+}

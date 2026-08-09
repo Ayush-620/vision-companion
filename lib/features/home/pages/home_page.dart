@@ -1,14 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/feature_card.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../l10n/app_localizations.dart';
+import '../widgets/feature_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final user = FirebaseAuth.instance.currentUser;
 
     final displayName = user?.displayName?.trim().isNotEmpty == true
@@ -17,17 +20,17 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vision Companion'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(
             tooltip: 'History',
             onPressed: () {
-             context.push('/history');
-              },
-              icon: const Icon(Icons.history),
+              context.push('/history');
+            },
+            icon: const Icon(Icons.history),
           ),
           IconButton(
-            tooltip: 'Profile',
+            tooltip: l10n.profile,
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -46,38 +49,33 @@ class HomePage extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           children: [
             Text(
-              'Welcome, $displayName 👋',
+              l10n.welcome(displayName),
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
             Text(
-              'Choose a vision tool to get started.',
+              l10n.chooseVisionTool,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 24),
-
             FeatureCard(
               icon: Icons.camera_alt_outlined,
-              title: 'Live Object Detector',
-              description:
-                  'Use your camera to detect objects in real time.',
-              buttonText: 'Start Detector',
-             onPressed: () {
-  context.push('/detector');
-},
+              title: l10n.liveObjectDetector,
+              description: l10n.liveObjectDetectorDescription,
+              buttonText: l10n.startDetector,
+              onPressed: () {
+                context.push('/detector');
+              },
             ),
-
             const SizedBox(height: 16),
-
             FeatureCard(
               icon: Icons.image_search_outlined,
-              title: 'AI Image Analyzer',
-              description:
-                  'Capture an image and get an AI-powered description.',
-              buttonText: 'Analyze Image',
-                   onPressed: () {
-                   context.go('/analyzer');
-             },
+              title: l10n.aiImageAnalyzer,
+              description: l10n.aiImageAnalyzerDescription,
+              buttonText: l10n.analyzeImage,
+              onPressed: () {
+                context.go('/analyzer');
+              },
             ),
           ],
         ),
@@ -95,6 +93,8 @@ class _ProfileSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
@@ -102,9 +102,9 @@ class _ProfileSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Profile',
-              style: TextStyle(
+            Text(
+              l10n.profile,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -122,6 +122,15 @@ class _ProfileSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
+            ListTile(
+              leading: const Icon(Icons.settings_outlined),
+              title: Text(l10n.settings),
+              onTap: () {
+                Navigator.of(context).pop();
+                context.push('/settings');
+              },
+            ),
+            const SizedBox(height: 8),
             SizedBox(
               height: 48,
               child: OutlinedButton.icon(
@@ -133,7 +142,7 @@ class _ProfileSheet extends StatelessWidget {
                   }
                 },
                 icon: const Icon(Icons.logout),
-                label: const Text('Sign Out'),
+                label: Text(l10n.signOut),
               ),
             ),
           ],
