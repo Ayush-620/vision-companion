@@ -8,6 +8,10 @@ import 'package:get_it/get_it.dart';
 import '../../features/auth/cubit/auth_cubit.dart';
 import '../../features/auth/repository/auth_repository.dart';
 import '../../features/history/repository/history_repository.dart';
+import '../../features/detector/cubit/detector_cubit.dart';
+import '../../features/detector/services/detector_service.dart';
+import '../../features/detector/services/speech_service.dart';
+
 
 final getIt = GetIt.instance;
 
@@ -50,4 +54,19 @@ Future<void> configureDependencies() async {
      auth: getIt(),
    ),
  );
+     getIt.registerFactory<DetectorService>(
+    () => DetectorService(),
+  );
+
+  getIt.registerFactory<SpeechService>(
+    () => SpeechService(),
+  );
+
+  getIt.registerFactory<DetectorCubit>(
+    () => DetectorCubit(
+      detectorService: getIt<DetectorService>(),
+      speechService: getIt<SpeechService>(),
+      historyRepository: getIt<HistoryRepository>(),
+    ),
+  );
 }

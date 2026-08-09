@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../services/groq_vision_service.dart';
@@ -24,6 +25,10 @@ class AnalyzerCubit extends Cubit<AnalyzerState> {
 
     try {
       final result = await _service.analyzeImage(imageBytes);
+
+      await FirebaseAnalytics.instance.logEvent(
+  name: 'image_analyzed',
+);
 
       await _historyRepository.saveHistory(
         featureType: 'analyzer',

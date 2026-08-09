@@ -1,7 +1,9 @@
+import 'package:go_router/go_router.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../cubit/analyzer_cubit.dart';
 import '../cubit/analyzer_state.dart';
 import '../services/groq_vision_service.dart';
@@ -36,7 +38,8 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
       }
 
       final camera = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.back,
+        (camera) =>
+            camera.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
 
@@ -67,36 +70,40 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
     }
   }
 
- Future<void> _captureImage(BuildContext context) async {
-  final controller = _controller;
+  Future<void> _captureImage(BuildContext context) async {
+    final controller = _controller;
 
-  if (controller == null || !controller.value.isInitialized) {
-    return;
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+
+    final cubit = context.read<AnalyzerCubit>();
+
+    if (cubit.state is AnalyzerProcessing) {
+      return;
+    }
+
+    try {
+      final image = await controller.takePicture();
+      final bytes = await image.readAsBytes();
+
+      if (!mounted) return;
+
+      await cubit.analyzeImage(bytes);
+    } catch (e) {
+      if (!mounted) return;
+
+      final l10n = AppLocalizations.of(context)!;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${l10n.captureImageError}: $e',
+          ),
+        ),
+      );
+    }
   }
-
-  final cubit = context.read<AnalyzerCubit>();
-
-  if (cubit.state is AnalyzerProcessing) {
-    return;
-  }
-
-  try {
-    final image = await controller.takePicture();
-    final bytes = await image.readAsBytes();
-
-    if (!mounted) return;
-
-    await cubit.analyzeImage(bytes);
-  } catch (e) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Could not capture image: $e'),
-      ),
-    );
-  }
-}
 
   @override
   void dispose() {
@@ -106,10 +113,17 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_initializing) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('AI Image Analyzer'),
+          leading: IconButton(
+            tooltip: l10n.backToHome,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
+          title: Text(l10n.aiImageAnalyzer),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -120,7 +134,12 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
     if (_error != null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('AI Image Analyzer'),
+          leading: IconButton(
+            tooltip: l10n.backToHome,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
+          title: Text(l10n.aiImageAnalyzer),
         ),
         body: Center(
           child: Padding(
@@ -136,48 +155,62 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
 
     final controller = _controller;
 
-    if (controller == null || !controller.value.isInitialized) {
-      return const Scaffold(
+    if (controller == null ||
+        !controller.value.isInitialized) {
+      return Scaffold(
         body: Center(
-          child: Text('Camera is not available.'),
+          child: Text(l10n.cameraNotAvailable),
         ),
       );
     }
 
     return BlocProvider(
       create: (_) => AnalyzerCubit(
-       GroqVisionService(),
-       getIt<HistoryRepository>(),
-     ),
+        GroqVisionService(),
+        getIt<HistoryRepository>(),
+      ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('AI Image Analyzer'),
+          leading: IconButton(
+            tooltip: l10n.backToHome,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
+          title: Text(l10n.aiImageAnalyzer),
         ),
         body: BlocBuilder<AnalyzerCubit, AnalyzerState>(
           builder: (context, state) {
             return Stack(
               fit: StackFit.expand,
               children: [
-                CameraPreview(controller),
+                Semantics(
+                  label: l10n.cameraForImageAnalysis,
+                  image: true,
+                  child: CameraPreview(controller),
+                ),
 
                 if (state is AnalyzerProcessing)
-                  Container(
-                    color: Colors.black54,
-                    child: const Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text(
-                            'Analyzing image...',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                  Semantics(
+                    liveRegion: true,
+                    label: l10n.analyzingImagePleaseWait,
+                    child: Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            Text(
+                              l10n.analyzingImage,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -201,12 +234,18 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
                     bottom: 32,
                     child: SafeArea(
                       child: Semantics(
-                        label: 'Capture image for AI analysis',
+                        label: l10n.captureImageForAnalysis,
                         button: true,
+                        hint: l10n.captureImageHint,
                         child: FilledButton.icon(
-                          onPressed: () => _captureImage(context),
-                          icon: const Icon(Icons.camera_alt),
-                          label: const Text('Analyze Image'),
+                          onPressed: () =>
+                              _captureImage(context),
+                          icon: const Icon(
+                            Icons.camera_alt,
+                          ),
+                          label: Text(
+                            l10n.analyzeImage,
+                          ),
                         ),
                       ),
                     ),
@@ -223,6 +262,8 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
     BuildContext context,
     String result,
   ) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Positioned(
       left: 16,
       right: 16,
@@ -233,11 +274,12 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
             padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Analysis Result',
-                  style: TextStyle(
+                Text(
+                  l10n.analysisResult,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -245,17 +287,28 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
                 const SizedBox(height: 12),
                 Flexible(
                   child: SingleChildScrollView(
-                    child: Text(result),
+                    child: Semantics(
+                      label: l10n.analysisResultLabel,
+                      child: Text(result),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () {
-                      context.read<AnalyzerCubit>().reset();
-                    },
-                    child: const Text('Analyze Another Image'),
+                  child: Semantics(
+                    button: true,
+                    label: l10n.analyzeAnotherImage,
+                    child: FilledButton(
+                      onPressed: () {
+                        context
+                            .read<AnalyzerCubit>()
+                            .reset();
+                      },
+                      child: Text(
+                        l10n.analyzeAnotherImage,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -270,6 +323,8 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
     BuildContext context,
     String message,
   ) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Positioned(
       left: 16,
       right: 16,
@@ -286,9 +341,9 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
                   size: 40,
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Analysis failed',
-                  style: TextStyle(
+                Text(
+                  l10n.analysisFailed,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -301,11 +356,17 @@ class _AnalyzerPageState extends State<AnalyzerPage> {
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () {
-                      context.read<AnalyzerCubit>().reset();
-                    },
-                    child: const Text('Retry'),
+                  child: Semantics(
+                    button: true,
+                    label: l10n.retryImageAnalysis,
+                    child: FilledButton(
+                      onPressed: () {
+                        context
+                            .read<AnalyzerCubit>()
+                            .reset();
+                      },
+                      child: Text(l10n.retry),
+                    ),
                   ),
                 ),
               ],

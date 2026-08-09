@@ -1,10 +1,10 @@
-import '../services/speech_service.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/di/injection.dart';
-import '../../history/repository/history_repository.dart';
-import '../services/detector_service.dart';
+import '../../../l10n/app_localizations.dart';
+import '../cubit/detector_cubit.dart';
 import '../services/yuv_converter.dart';
 import '../models/detection.dart';
 import '../widgets/detection_painter.dart';
@@ -18,7 +18,7 @@ class DetectorPage extends StatefulWidget {
 
 class _DetectorPageState extends State<DetectorPage> {
   CameraController? _controller;
-  DetectorService? _detectorService;
+  late final DetectorCubit _detectorCubit;
 
   List<Detection> _detections = [];
 
@@ -29,91 +29,23 @@ class _DetectorPageState extends State<DetectorPage> {
   String? _error;
   String _status = 'Starting camera...';
 
-  final SpeechService _speechService = SpeechService();
-
-  final HistoryRepository _historyRepository =
-    getIt<HistoryRepository>();
-
-final Map<String, DateTime> _lastSpoken = {};
-
-static const Duration _speechCooldown = Duration(
-  seconds: 3,
-);
-
-  // COCO labels used by SSD MobileNet.
-  
-
   @override
   void initState() {
     super.initState();
+
+    _detectorCubit = getIt<DetectorCubit>();
     _initialize();
   }
 
-   Future<void> _announceDetections(
-  List<Detection> detections,
-) async {
-  if (detections.isEmpty || _paused) {
-    return;
-  }
-
-  final now = DateTime.now();
-
-  final objectsToSpeak = <String>[];
-
-  for (final detection in detections) {
-    if (detection.confidence < 0.65) {
-      continue;
-    }
-
-    final label = detection.label;
-
-    final lastTime = _lastSpoken[label];
-
-    if (lastTime != null &&
-        now.difference(lastTime) < _speechCooldown) {
-      continue;
-    }
-
-    _lastSpoken[label] = now;
-
-    objectsToSpeak.add(label);
-  }
-
-  if (objectsToSpeak.isEmpty) {
-    return;
-  }
-
-  final uniqueObjects = objectsToSpeak.toSet().toList();
-
-  final message = uniqueObjects.length == 1
-    ? '${uniqueObjects.first} detected'
-    : '${uniqueObjects.join(', ')} detected';
-
-await _speechService.speak(message);
-try {
-  await _historyRepository.saveHistory(
-    featureType: 'detector',
-    resultSummary: message,
-  );
-} catch (e) {
-  debugPrint('History save failed: $e');
-}
-await _historyRepository.saveHistory(
-  featureType: 'detector',
-  resultSummary: message,
-);
-}   
-
   Future<void> _initialize() async {
     try {
-      setState(() {
-        _status = 'Loading detector...';
-      });
+      if (mounted) {
+        setState(() {
+          _status = 'Loading detector...';
+        });
+      }
 
-      await _speechService.initialize();
-
-      final detectorService = DetectorService();
-      await detectorService.initialize();
+      await _detectorCubit.initialize();
 
       final cameras = await availableCameras();
 
@@ -122,7 +54,8 @@ await _historyRepository.saveHistory(
       }
 
       final camera = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.back,
+        (camera) =>
+            camera.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
 
@@ -137,11 +70,9 @@ await _historyRepository.saveHistory(
 
       if (!mounted) {
         await controller.dispose();
-        await detectorService.dispose();
         return;
       }
 
-      _detectorService = detectorService;
       _controller = controller;
 
       setState(() {
@@ -165,18 +96,12 @@ await _historyRepository.saveHistory(
       return;
     }
 
-    final detectorService = _detectorService;
-
-    if (detectorService == null) {
-      return;
-    }
-
     _processingFrame = true;
 
     try {
       final rgbBytes = YuvConverter.convertToRgb(image);
 
-      final detections = await detectorService.detect(
+      final detections = await _detectorCubit.detect(
         rgbBytes: rgbBytes,
         imageWidth: image.width,
         imageHeight: image.height,
@@ -184,15 +109,15 @@ await _historyRepository.saveHistory(
 
       if (!mounted) return;
 
-     setState(() {
-  _detections = detections;
+      final l10n = AppLocalizations.of(context)!;
 
-  _status = detections.isEmpty
-      ? 'No objects detected'
-      : '${detections.length} object(s) detected';
-});
-   
-      await _announceDetections(detections);
+      setState(() {
+        _detections = detections;
+
+        _status = detections.isEmpty
+            ? l10n.noObjectsDetected
+            : l10n.objectsDetected(detections.length);
+      });
 
       if (detections.isNotEmpty) {
         debugPrint(
@@ -208,8 +133,10 @@ await _historyRepository.saveHistory(
       debugPrint('Detection error: $e');
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+
         setState(() {
-          _status = 'Detection error';
+          _status = l10n.detectionError;
         });
       }
     } finally {
@@ -220,27 +147,35 @@ await _historyRepository.saveHistory(
   Future<void> _togglePause() async {
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     setState(() {
       _paused = !_paused;
-      _status = _paused ? 'Detection paused' : 'Detecting...';
+      _status = _paused ? l10n.pauseDetection : l10n.detecting;
     });
   }
 
- @override
-void dispose() {
-  _controller?.stopImageStream();
-  _controller?.dispose();
-  _detectorService?.dispose();
-  _speechService.dispose();
-  super.dispose();
-}
+  @override
+  void dispose() {
+    _controller?.stopImageStream();
+    _controller?.dispose();
+    _detectorCubit.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_initializing) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Live Object Detector'),
+          leading: IconButton(
+            tooltip: l10n.backToHome,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
+          title: Text(l10n.liveObjectDetector),
         ),
         body: Center(
           child: Column(
@@ -258,7 +193,12 @@ void dispose() {
     if (_error != null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Live Object Detector'),
+          leading: IconButton(
+            tooltip: l10n.backToHome,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
+          title: Text(l10n.liveObjectDetector),
         ),
         body: Center(
           child: Padding(
@@ -274,32 +214,44 @@ void dispose() {
 
     final controller = _controller;
 
-    if (controller == null || !controller.value.isInitialized) {
-      return const Scaffold(
+    if (controller == null ||
+        !controller.value.isInitialized) {
+      return Scaffold(
         body: Center(
-          child: Text('Camera is not available.'),
+          child: Text(l10n.cameraNotAvailable),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Live Object Detector'),
+        leading: IconButton(
+          tooltip: l10n.backToHome,
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'),
+        ),
+        title: Text(l10n.liveObjectDetector),
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          CameraPreview(controller),
+          Semantics(
+            label: l10n.liveCameraFeed,
+            image: true,
+            child: CameraPreview(controller),
+          ),
 
-
-           Positioned.fill(
-    child: CustomPaint(
-      painter: DetectionPainter(
-  detections: _detections,
-  cameraAspectRatio: controller.value.aspectRatio,
-),
-    ),
-  ),
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: DetectionPainter(
+                  detections: _detections,
+                  cameraAspectRatio:
+                      controller.value.aspectRatio,
+                ),
+              ),
+            ),
+          ),
 
           Positioned(
             left: 16,
@@ -312,25 +264,40 @@ void dispose() {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          _status,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
+                        child: Semantics(
+                          liveRegion: true,
+                          label: _status,
+                          child: Text(
+                            _status,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       SizedBox(
                         height: 48,
-                        child: FilledButton.icon(
-                          onPressed: _togglePause,
-                          icon: Icon(
-                            _paused
-                                ? Icons.play_arrow
-                                : Icons.pause,
-                          ),
-                          label: Text(
-                            _paused ? 'Resume' : 'Pause',
+                        child: Semantics(
+                          button: true,
+                          label: _paused
+                              ? l10n.resumeDetection
+                              : l10n.pauseDetection,
+                          hint: _paused
+                              ? l10n.resumeDetectionHint
+                              : l10n.pauseDetectionHint,
+                          child: FilledButton.icon(
+                            onPressed: _togglePause,
+                            icon: Icon(
+                              _paused
+                                  ? Icons.play_arrow
+                                  : Icons.pause,
+                            ),
+                            label: Text(
+                              _paused
+                                  ? l10n.resume
+                                  : l10n.pause,
+                            ),
                           ),
                         ),
                       ),

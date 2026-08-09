@@ -8,20 +8,14 @@ class DetectorInitial extends DetectorState {
   const DetectorInitial();
 }
 
-class DetectorLoading extends DetectorState {
-  const DetectorLoading();
-}
-
 class DetectorRunning extends DetectorState {
-  final List<Detection> detections;
-
-  const DetectorRunning(this.detections);
+  const DetectorRunning();
 }
 
-class DetectorPaused extends DetectorState {
+class DetectorResults extends DetectorState {
   final List<Detection> detections;
 
-  const DetectorPaused(this.detections);
+  const DetectorResults(this.detections);
 }
 
 class DetectorError extends DetectorState {

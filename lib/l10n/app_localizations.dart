@@ -184,6 +184,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hindi'**
   String get hindi;
+
+  /// No description provided for @backToHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Home'**
+  String get backToHome;
+
+  /// No description provided for @startingCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting camera...'**
+  String get startingCamera;
+
+  /// No description provided for @loadingDetector.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading detector...'**
+  String get loadingDetector;
+
+  /// No description provided for @detecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Detecting...'**
+  String get detecting;
+
+  /// No description provided for @noObjectsDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'No objects detected'**
+  String get noObjectsDetected;
+
+  /// No description provided for @objectsDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} objects detected'**
+  String objectsDetected(Object count);
+
+  /// No description provided for @cameraNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera is not available.'**
+  String get cameraNotAvailable;
+
+  /// No description provided for @detectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Detection error'**
+  String get detectionError;
+
+  /// No description provided for @liveCameraFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Live camera feed for object detection'**
+  String get liveCameraFeed;
+
+  /// No description provided for @resumeDetection.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume detection'**
+  String get resumeDetection;
+
+  /// No description provided for @pauseDetection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause detection'**
+  String get pauseDetection;
+
+  /// No description provided for @resumeDetectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Double tap to resume object detection'**
+  String get resumeDetectionHint;
+
+  /// No description provided for @pauseDetectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Double tap to pause object detection'**
+  String get pauseDetectionHint;
+
+  /// No description provided for @resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resume;
+
+  /// No description provided for @pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// No description provided for @cameraForImageAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera for image analysis'**
+  String get cameraForImageAnalysis;
+
+  /// No description provided for @captureImageForAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture image for AI analysis'**
+  String get captureImageForAnalysis;
+
+  /// No description provided for @captureImageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Double tap to capture an image for AI analysis'**
+  String get captureImageHint;
+
+  /// No description provided for @analyzingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing image...'**
+  String get analyzingImage;
+
+  /// No description provided for @analyzingImagePleaseWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing image, please wait'**
+  String get analyzingImagePleaseWait;
+
+  /// No description provided for @analysisResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis Result'**
+  String get analysisResult;
+
+  /// No description provided for @analysisResultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis result'**
+  String get analysisResultLabel;
+
+  /// No description provided for @analyzeAnotherImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze Another Image'**
+  String get analyzeAnotherImage;
+
+  /// No description provided for @analysisFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis failed'**
+  String get analysisFailed;
+
+  /// No description provided for @retryImageAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry image analysis'**
+  String get retryImageAnalysis;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @captureImageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not capture image'**
+  String get captureImageError;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @visionCompanionUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Vision Companion User'**
+  String get visionCompanionUser;
+
+  /// No description provided for @noEmailAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No email available'**
+  String get noEmailAvailable;
+
+  /// No description provided for @openHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Open history'**
+  String get openHistory;
+
+  /// No description provided for @openHistoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Double tap to view your detection and image analysis history'**
+  String get openHistoryHint;
+
+  /// No description provided for @there.
+  ///
+  /// In en, this message translates to:
+  /// **'there'**
+  String get there;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
