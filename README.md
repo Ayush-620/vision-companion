@@ -1,102 +1,99 @@
-# Vision Companion
+# 👁️ Vision Companion
 
-A Flutter-based accessibility-focused vision assistance application developed as part of the **Flutter Developer Intern Assignment**.
+> **An accessibility-focused AI vision assistant built with Flutter**
 
-Vision Companion provides real-time object detection and AI-powered image analysis, with Firebase authentication, cloud history, localization, and Android TalkBack accessibility support.
+Vision Companion is a Flutter-based mobile application designed to assist users through **real-time object detection, AI-powered image analysis, voice feedback, haptic feedback, localization, and Android TalkBack accessibility**.
+
+Developed as part of the **Flutter Developer Intern Assignment**.
 
 ---
 
-## Features
+## 🔗 Project Links
 
-### Live Object Detector
+| Resource | Link |
+|---|---|
+| 📦 GitHub Repository | [Vision Companion](https://github.com/Ayush-620/vision-companion) |
+| 📱 Release APK | [Download APK](https://drive.google.com/file/d/19EZu1KSt0qHA_tQZjW3AO10BLFT25m9g/view?usp=drivesdk) |
+
+---
+
+## ✨ Key Features
+
+### 🔍 Live Object Detection
 
 - Real-time camera-based object detection.
-- TensorFlow Lite SSD MobileNet V1 model.
+- TensorFlow Lite **SSD MobileNet V1** model.
 - Bounding boxes and confidence scores.
-- Text-to-speech announcements for detected objects.
+- Voice announcements for detected objects.
 - Haptic feedback.
-- Pause/Resume detection.
+- Pause / Resume detection.
 - Detection history stored in Firestore.
 
-### AI Image Analyzer
+### 🤖 AI Image Analyzer
 
-- Capture an image using the device camera.
-- AI-powered image description using Groq Vision API.
+- Capture images directly from the camera.
+- AI-powered image descriptions using **Groq Vision API**.
 - Simple descriptions suitable for spoken audio.
 - Loading and error states.
 - Retry and Analyze Another Image options.
-- Analysis history stored in Firestore.
+- Analysis results stored in Firestore history.
 
-### Authentication
+### 🔐 Authentication
 
 - Firebase Email/Password authentication.
 - Google Sign-In.
 - User profile information.
-- Sign-out functionality.
+- Secure sign-out functionality.
 
-### History
+### 📚 History
 
 - Stores object detection results.
 - Stores AI image analysis results.
 - History is associated with the authenticated user.
+- Timestamped records stored in Firestore.
 
-### Localization
+### 🌐 Localization
 
 - English and Hindi support.
-- ARB-based Flutter localization.
+- Flutter ARB-based localization.
 - Language selection from Settings.
-- Selected language is persisted locally.
+- Selected language persisted locally.
 
-### Accessibility
+### ♿ Accessibility
 
 - Android TalkBack support.
-- Flutter `Semantics` labels.
+- Flutter `Semantics` implementation.
 - Accessible buttons and controls.
 - Live-region detection status.
 - Accessible camera controls.
-- Text-to-speech object detection feedback.
+- Voice-based object detection feedback.
+- Accessibility-friendly image analysis controls.
 
 ---
 
-## Screenshots
+## 🖼️ Screenshots
 
-### Login
+| Login | Home |
+|:---:|:---:|
+| <img src="docs/screenshots/login.jpeg" width="280"> | <img src="docs/screenshots/home.jpeg" width="280"> |
 
-![Login Page](docs/screenshots/login.jpeg)
+| Home – Hindi | Live Object Detector |
+|:---:|:---:|
+| <img src="docs/screenshots/home-hindi.jpeg" width="280"> | <img src="docs/screenshots/object-detector.jpeg" width="280"> |
 
-### Home
+| AI Image Analyzer | History |
+|:---:|:---:|
+| <img src="docs/screenshots/image-analyzer.jpeg" width="280"> | <img src="docs/screenshots/history.jpeg" width="280"> |
 
-![Home Page](docs/screenshots/home.jpeg)
-
-### Home Hindi
-
-![Hindi Home Page](docs/screenshots/home-hindi.jpeg)
-
-### Live Object Detector
-
-![Live Object Detector](docs/screenshots/object-detector.jpeg)
-
-### AI Image Analyzer
-
-![AI Image Analyzer](docs/screenshots/image-analyzer.jpeg)
-
-### History
-
-![History Page](docs/screenshots/history.jpeg)
-
-### Profile
-
-![Profile Page](docs/screenshots/profile.jpeg)
-
-### Settings
-
-![Settings Page](docs/screenshots/settings.jpeg)
+| Profile | Settings |
+|:---:|:---:|
+| <img src="docs/screenshots/profile.jpeg" width="280"> | <img src="docs/screenshots/settings.jpeg" width="280"> |
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
-The application follows a **feature-first architecture** with Cubit-based state management.
+Vision Companion follows a **feature-first architecture** with **Cubit-based state management**, separating UI, state management, services, repositories, and external integrations.
 
 ```text
                          Vision Companion
@@ -143,30 +140,30 @@ Updated UI + Accessibility Feedback
 
 ---
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Flutter / Dart | Application development |
-| Flutter Bloc / Cubit | State management |
-| GoRouter | Navigation |
-| Firebase Auth | Authentication |
-| Cloud Firestore | User history |
-| Firebase Analytics | Usage analytics |
-| Firebase Crashlytics | Crash reporting |
-| TensorFlow Lite | Object detection |
-| SSD MobileNet V1 | Detection model |
-| Groq Vision API | AI image analysis |
-| Camera | Camera access |
-| Flutter TTS | Voice feedback |
-| Flutter Semantics | Accessibility |
-| Shared Preferences | Local settings persistence |
-| Flutter Dotenv | Environment configuration |
-| GetIt | Dependency injection |
+| **Flutter / Dart** | Mobile application development |
+| **Flutter Bloc / Cubit** | State management |
+| **GoRouter** | Navigation |
+| **Firebase Auth** | Authentication |
+| **Cloud Firestore** | User history |
+| **Firebase Analytics** | Usage analytics |
+| **Firebase Crashlytics** | Crash reporting |
+| **TensorFlow Lite** | Object detection |
+| **SSD MobileNet V1** | Detection model |
+| **Groq Vision API** | AI image analysis |
+| **Camera** | Camera access |
+| **Flutter TTS** | Voice feedback |
+| **Flutter Semantics** | Accessibility |
+| **Shared Preferences** | Local settings persistence |
+| **Flutter Dotenv** | Environment configuration |
+| **GetIt** | Dependency injection |
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```text
 lib/
@@ -192,26 +189,26 @@ lib/
 
 ---
 
-## Firebase Configuration
+## 🔥 Firebase Integration
 
-The application uses Firebase for authentication, history, analytics, and crash reporting.
+Firebase is used for authentication, history, analytics, and crash reporting.
 
-### Firebase Authentication
+### Authentication
 
-Enabled authentication methods:
+Enabled providers:
 
-- Email/Password
+- Email / Password
 - Google Sign-In
 
-### Cloud Firestore
+### Firestore
 
-History is stored per authenticated user:
+User history is stored using:
 
 ```text
 users/{uid}/history/{documentId}
 ```
 
-Each history entry contains:
+Each history record contains:
 
 ```text
 timestamp
@@ -219,7 +216,7 @@ featureType
 resultSummary
 ```
 
-### Firebase Analytics
+### Analytics
 
 The application records events including:
 
@@ -229,13 +226,13 @@ detection_completed
 image_analyzed
 ```
 
-### Firebase Crashlytics
+### Crashlytics
 
-Flutter errors are reported to Firebase Crashlytics for crash monitoring.
+Flutter application errors are reported to Firebase Crashlytics.
 
 ---
 
-## Groq API Configuration
+## 🤖 Groq Vision Configuration
 
 The AI Image Analyzer uses the Groq Vision API.
 
@@ -251,9 +248,11 @@ The application reads the key using:
 dotenv.env['GROQ_API_KEY']
 ```
 
-**Do not commit `.env` or API keys to GitHub.**
+### Security
 
-Recommended `.gitignore` entries:
+Never commit API keys or environment files.
+
+Recommended `.gitignore`:
 
 ```gitignore
 .env
@@ -263,13 +262,21 @@ Recommended `.gitignore` entries:
 
 ---
 
-## Setup
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Flutter SDK
+- Dart SDK
+- Android Studio / Android SDK
+- Firebase project
+- Groq API key
 
 ### 1. Clone the Repository
 
 ```bash
-git clone <https://github.com/Ayush-620/vision-companion>
-cd vision_companion
+git clone https://github.com/Ayush-620/vision-companion
+cd vision-companion
 ```
 
 ### 2. Install Dependencies
@@ -280,18 +287,19 @@ flutter pub get
 
 ### 3. Configure Firebase
 
-Configure the following Firebase services:
+Configure:
 
 - Firebase Authentication
+- Google Sign-In
 - Cloud Firestore
 - Firebase Analytics
 - Firebase Crashlytics
 
-Configure Google Sign-In with the required SHA-1/SHA-256 fingerprints.
+Configure the required SHA-1/SHA-256 fingerprints for Google Sign-In.
 
 ### 4. Configure Groq
 
-Create `.env` in the project root:
+Create `.env`:
 
 ```env
 GROQ_API_KEY=YOUR_GROQ_API_KEY
@@ -317,12 +325,12 @@ flutter run
 
 ---
 
-## Localization
+## 🌐 Localization
 
 Supported languages:
 
-- English
-- Hindi
+- 🇬🇧 English
+- 🇮🇳 Hindi
 
 Localization files:
 
@@ -331,7 +339,7 @@ lib/l10n/app_en.arb
 lib/l10n/app_hi.arb
 ```
 
-Generate localization files using:
+Generate localization files:
 
 ```bash
 flutter gen-l10n
@@ -341,52 +349,54 @@ The selected language is persisted using `shared_preferences`.
 
 ---
 
-## Accessibility / TalkBack
+## ♿ Accessibility / TalkBack
 
-Vision Companion supports Android TalkBack using Flutter `Semantics`.
+Vision Companion uses Flutter `Semantics` to provide Android TalkBack support.
 
 Accessibility has been implemented for:
 
-- Login controls.
-- Home feature cards.
-- Camera preview.
-- Detection status.
-- Pause/Resume button.
-- Image capture button.
-- Analysis processing state.
-- Analysis result.
-- Retry controls.
-- History.
-- Settings and language selection.
+- Login controls
+- Home feature cards
+- Camera preview
+- Detection status
+- Pause / Resume controls
+- Image capture controls
+- Analysis processing state
+- Analysis results
+- Retry controls
+- History
+- Settings
+- Language selection
 
-### Enabling TalkBack
-
-On Android:
+### Enable TalkBack
 
 ```text
-Settings
-→ Accessibility
-→ TalkBack
-→ Enable
+Android Settings
+      ↓
+Accessibility
+      ↓
+TalkBack
+      ↓
+Enable
 ```
 
 The application was tested using TalkBack navigation and double-tap activation.
 
-Object detection voice feedback is intentionally provided in **English (`en-US`)**.
+> 🔊 Object detection voice feedback is intentionally provided in **English (`en-US`)**.
 
 ---
 
-## Testing
+## 🧪 Testing
 
 The following functionality has been tested:
 
-- [x] Email/Password Login
+- [x] Email / Password Login
 - [x] Google Sign-In
 - [x] Home Page
 - [x] Live Object Detection
 - [x] Object Detection Voice Feedback
 - [x] Haptic Feedback
-- [x] Pause/Resume Detection
+- [x] Pause / Resume Detection
 - [x] AI Image Analysis
 - [x] Groq Vision API
 - [x] Firestore History
@@ -401,25 +411,27 @@ The following functionality has been tested:
 
 ---
 
-## Build Release APK
+## 📦 Release Build
 
-Generate the release APK using:
+Generate the release APK:
 
 ```bash
 flutter build apk --release
 ```
 
-The generated APK will be available at:
+APK location:
 
 ```text
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
+A tested release APK is also available from the project links above.
+
 ---
 
-## Security
+## 🔐 Security
 
-The following files and credentials must **not** be committed to GitHub:
+The following must **never** be committed to the repository:
 
 ```text
 .env
@@ -428,93 +440,72 @@ Private signing keys
 Service account credentials
 ```
 
-Before pushing changes, check:
+Before pushing changes:
 
 ```bash
 git status
 git diff
 ```
 
-Make sure no credentials or sensitive information are staged.
+Verify that no credentials or sensitive information are staged.
 
 ---
 
-## Assignment Submission
+## 📋 Assignment Requirements
 
-The final submission includes:
+Vision Companion includes the major assignment requirements:
 
-- Public GitHub repository
-- Complete Flutter source code
-- Firebase integration
-- Live object detection
-- AI image analysis
-- English/Hindi localization
-- TalkBack accessibility
-- Screenshots
-- Project documentation
-- Release APK
-- Demonstration video
-
-### GitHub Repository
-
-```text
-<https://github.com/Ayush-620/vision-companionL>
-```
-
-### Release APK
-
-```text
-<https://drive.google.com/file/d/19EZu1KSt0qHA_tQZjW3AO10BLFT25m9g/view?usp=drivesdk>
-```
+- ✅ Flutter mobile application
+- ✅ Firebase authentication
+- ✅ Google Sign-In
+- ✅ Real-time object detection
+- ✅ TensorFlow Lite integration
+- ✅ AI-powered image analysis
+- ✅ Groq Vision API integration
+- ✅ Cloud history
+- ✅ Analytics
+- ✅ Crash reporting
+- ✅ English / Hindi localization
+- ✅ Persistent language selection
+- ✅ Android TalkBack accessibility
+- ✅ Voice feedback
+- ✅ Haptic feedback
+- ✅ Screenshots
+- ✅ Project documentation
+- ✅ Release APK
+- ✅ Demonstration video
 
 ---
 
-## Screenshots Directory
-
-Place the screenshots in the following directory:
+## 📂 Documentation & Screenshots
 
 ```text
 docs/
-└── screenshots/
-    ├── login.jpeg
-    ├── home.jpeg
-    ├── object-detector.jpeg
-    ├── image-analyzer.jpeg
-    ├── history.jpeg
-    ├── profile.jpeg
-    └── settings.jpeg
+├── screenshots/
+│   ├── login.jpeg
+│   ├── home.jpeg
+│   ├── home-hindi.jpeg
+│   ├── object-detector.jpeg
+│   ├── image-analyzer.jpeg
+│   ├── history.jpeg
+│   ├── profile.jpeg
+│   └── settings.jpeg
+│
+└── Vision_Companion_Submission_Documentation.pdf
 ```
 
 ---
 
-## Repository Structure
+## 👨‍💻 Developer
 
-```text
-vision_companion/
-│
-├── android/
-├── lib/
-├── assets/
-├── docs/
-│   ├── screenshots/
-│   │   ├── login.jpeg
-│   │   ├── home.jpeg
-│   │   ├── object-detector.jpeg
-│   │   ├── image-analyzer.jpeg
-│   │   ├── history.jpeg
-│   │   ├── profile.jpeg
-│   │   └── settings.jpeg
-│   │
-│   └── Vision_Companion_Submission_Documentation.pdf
-│
-├── .env.example
-├── .gitignore
-├── pubspec.yaml
-└── README.md
-```
+**Ayush Kashyap**
+
+Flutter Developer | AI & Data Science
+
+[GitHub](https://github.com/Ayush-620)
 
 ---
 
-## License
+## 📄 License
 
 This project was developed as part of the **Flutter Developer Intern Assignment**.
