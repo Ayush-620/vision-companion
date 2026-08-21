@@ -451,32 +451,6 @@ Verify that no credentials or sensitive information are staged.
 
 ---
 
-## 📋 Assignment Requirements
-
-Vision Companion includes the major assignment requirements:
-
-- ✅ Flutter mobile application
-- ✅ Firebase authentication
-- ✅ Google Sign-In
-- ✅ Real-time object detection
-- ✅ TensorFlow Lite integration
-- ✅ AI-powered image analysis
-- ✅ Groq Vision API integration
-- ✅ Cloud history
-- ✅ Analytics
-- ✅ Crash reporting
-- ✅ English / Hindi localization
-- ✅ Persistent language selection
-- ✅ Android TalkBack accessibility
-- ✅ Voice feedback
-- ✅ Haptic feedback
-- ✅ Screenshots
-- ✅ Project documentation
-- ✅ Release APK
-- ✅ Demonstration video
-
----
-
 ## 📂 Documentation & Screenshots
 
 ```text
@@ -500,12 +474,6 @@ docs/
 
 **Ayush Kashyap**
 
-Flutter Developer | AI & Data Science
-
 [GitHub](https://github.com/Ayush-620)
 
 ---
-
-## 📄 License
-
-This project was developed as part of the **Flutter Developer Intern Assignment**.
