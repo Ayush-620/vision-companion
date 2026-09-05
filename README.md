@@ -13,7 +13,7 @@ Developed as part of the **Flutter Developer Intern Assignment**.
 | Resource | Link |
 |---|---|
 | 📦 GitHub Repository | [Vision Companion](https://github.com/Ayush-620/vision-companion) |
-| 📱 Release APK | [Download APK](https://drive.google.com/file/d/19EZu1KSt0qHA_tQZjW3AO10BLFT25m9g/view?usp=drivesdk) |
+| 📱 Release APK | [Download APK](https://drive.google.com/file/d/1uZbW9rj-rH03s6n3Cx6AMHP9T8o8SnJw/view?usp=drive_link) |
 
 ---
 
